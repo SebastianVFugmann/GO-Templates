@@ -38,7 +38,7 @@ func main() {
 
 	//Registers chitty chat
 	cc := CreateServer()
-	pb.RegisterChittyChatServiceServer(s, cc)
+	pb.RegisterServiceServer(s, cc)
 
 	// Listen and serve
 	log.Printf("T:%d - server listening at %v \n", cc.lamport.GetTime(), lis.Addr())
@@ -50,16 +50,16 @@ func main() {
 //The server and its variables
 type Server struct {
 	pb.UnimplementedServiceServer
-	Clients map[string]chan *pb.Message
+	Clients map[int32]chan *pb.Object
 	lamport LamportClock.LamportClock
 	mu      sync.RWMutex
-	ids     int
+	ids     int32
 }
 
 //Creates the server by initializing the client map and the lamport clock
 func CreateServer() *Server {
 	server := &Server{
-		Clients: make(map[string]chan *pb.Message),
+		Clients: make(map[int32]chan *pb.Object),
 	}
 	server.lamport.Initialize()
 	server.ids = 0
@@ -68,9 +68,9 @@ func CreateServer() *Server {
 
 //Used by a new client to join the chat service
 //Also one of the methods defined by the proto file
-func (s *Server) Join(in *pb.JoinRequest, msgStream pb.ChittyChatService_JoinServer) error {
+func (s *Server) Join(in *pb.JoinRequest, msgStream pb.Service_JoinServer) error {
 	s.lamport.SyncTime(in.Time)
-	log.Printf("T:%d - Received a JOIN message from client %s", s.lamport.GetTime(), in.Id)
+	log.Printf("T:%d - Received a JOIN message from client %d \n", s.lamport.GetTime(), in.Id)
 
 	//Adds the client to the map of clients
 	err := s.addClient(in.Id)
@@ -91,25 +91,22 @@ func (s *Server) Join(in *pb.JoinRequest, msgStream pb.ChittyChatService_JoinSer
 }
 
 //Method that adds the client to the map of clients
-func (s *Server) addClient(name string) error {
+func (s *Server) addClient(id int32) error {
 	//Increments clock
 	s.lamport.Increment()
 	s.mu.Lock()
 	defer s.mu.Unlock()
 
-	// Creates new client and checks if the name exists or is empty
-	_, ok := s.Clients[name]
-	if len(name) == 0 {
-		return errors.New("client name should not be empty")
-	}
+	// Creates new client and checks if the id exists or is empty
+	_, ok := s.Clients[id]
 	if ok {
 		return errors.New("client has already joined, cant rejoin")
 	}
 
 	// Creates a new channel for the new client
-	s.Clients[name] = make(chan *pb.Message)
+	s.Clients[id] = make(chan *pb.Object)
 
-	log.Printf("T:%d - Added new client %s", s.lamport.GetTime(), name)
+	log.Printf("T:%d - Added new client %d", s.lamport.GetTime(), id)
 	return nil
 }
 
