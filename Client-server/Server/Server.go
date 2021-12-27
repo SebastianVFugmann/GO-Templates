@@ -9,8 +9,8 @@ import (
 	"sync"
 
 	//The link to the folder that the package is in, but still from github
-	"github.com/Pinkvinus/DISYS_MiniProj2/LamportClock"
-	pb "github.com/Pinkvinus/DISYS_MiniProj2/chitty_chat"
+	pb "github.com/SebastianVFugmann/GO-Templates/Client-server/Proto"
+	"github.com/SebastianVFugmann/GO-Templates/LamportClock"
 	"google.golang.org/grpc"
 )
 
