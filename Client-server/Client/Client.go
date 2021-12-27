@@ -9,7 +9,7 @@ import (
 	"os"
 	"time"
 
-	pb "github.com/Pinkvinus/DISYS_MiniProj2/chitty_chat"
+	pb "github.com/SebastianVFugmann/GO-Templates/Client-server/Proto"
 	"github.com/SebastianVFugmann/GO-Templates/LamportClock"
 	"github.com/thecodeteam/goodbye"
 	"google.golang.org/grpc"
