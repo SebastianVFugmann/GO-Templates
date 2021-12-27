@@ -31,7 +31,7 @@ func main() {
 	log.SetOutput(file)
 
 	myClock.Initialize()
-	MyId = 0
+	//MyId = 0
 
 	// Set up a connection to the server.
 	conn, err := grpc.Dial(address, grpc.WithInsecure(), grpc.WithBlock())
@@ -44,7 +44,7 @@ func main() {
 	//Creates a client through the connection
 	c := pb.NewServiceClient(conn)
 
-	//What is to be eecuted when a client is closed
+	//What is to be executed when a client is closed
 	defer goodbye.Exit(ctx, -1)
 	goodbye.Notify(ctx)
 	goodbye.RegisterWithPriority(func(ctx context.Context, sig os.Signal) {
