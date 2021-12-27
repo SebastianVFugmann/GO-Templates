@@ -23,17 +23,17 @@ message Object {
 }
 
 message ServerResponse {
-    int32 httpstatuscode = 1;
+    int32 HttpStatusCode = 1;
 	int32 time = 2;
 }
 
 message JoinRequest {
-	string id = 1;
+	int32 id = 1;
 	int32 time = 2;
 }
 
 message LeaveRequest {
-	string id = 1;
+	int32 id = 1;
 	int32 time = 2;
 }
 

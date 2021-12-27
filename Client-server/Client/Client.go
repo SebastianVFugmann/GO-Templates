@@ -21,7 +21,7 @@ const (
 
 var (
 	myClock LamportClock.LamportClock
-	MyId    int
+	MyId    int32
 )
 
 func main() {
@@ -45,7 +45,7 @@ func main() {
 	//Gets the context
 	ctx := context.Background()
 	//Creates a client through the connection
-	c := pb.NewChittyChatServiceClient(conn)
+	c := pb.NewServiceClient(conn)
 
 	//What is to be eecuted when a client is closed
 	defer goodbye.Exit(ctx, -1)
@@ -63,28 +63,23 @@ func main() {
 	//Waits for the user to enter messages and sends them
 	scanner := bufio.NewScanner(os.Stdin)
 	for scanner.Scan() {
-		go Method(ctx, c, scanner.Text(), false)
+		go method(ctx, c, scanner.Text(), false)
 	}
 }
 
 //Private method that calls the SendMessage method defined in the proto file
-func Method(ctx context.Context, client pb.ChittyChatServiceClient, message string, special bool) {
+func method(ctx context.Context, client pb.ServiceClient, message string, special bool) {
 	//Increment clock since local event happened
 	myClock.Increment()
 
 	//Gets the stream returned by the SendMessage method
-	stream, err := client.SendMessage(ctx)
+	stream, err := client.Method(ctx)
 	if err != nil {
 		log.Printf("Cannot send message: error: %v \n", err)
 	}
 
 	//Creates the new message to be sent and sends it
-	msg := pb.Message{
-		Id:      MyId,
-		Message: message,
-		Time:    myClock.GetTime(),
-		Special: special,
-	}
+	msg := pb.Object{}
 	stream.Send(&msg)
 
 	//Gets the server response returned by the server from the stream
@@ -148,7 +143,7 @@ func join(ctx context.Context, client pb.ChittyChatServiceClient) {
 	<-waitc
 }
 
-func leave(ctx context.Context, client pb.ChittyChatServiceClient) {
+func leave(ctx context.Context, client pb.ServiceClient) {
 	myClock.Increment()
 
 	//Logs the request to leave
