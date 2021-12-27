@@ -1,0 +1,38 @@
+syntax = "proto3";
+
+option go_package = "github.com/Pinkvinus/DISYS_MiniProj2/chitty_chat";
+
+package chitty_chat;
+
+service Service {
+    // Sends a stream of messages and gets a stream of messages in return
+    rpc Join (JoinRequest) returns (stream Object) {}
+    rpc Method (Object) returns (ServerResponse) {}
+    rpc Leave (LeaveRequest) returns (ServerResponse) {}
+    //Gets an ID(which is irrelevant) and returns the next ID in the line
+    rpc createID (NodeId) returns (NodeId);
+}
+
+// The request message containing the user's message
+message Object {
+
+}
+
+message ServerResponse {
+    int32 httpstatuscode = 1;
+	int32 time = 2;
+}
+
+message JoinRequest {
+	string id = 1;
+	int32 time = 2;
+}
+
+message LeaveRequest {
+	string id = 1;
+	int32 time = 2;
+}
+
+message NodeId {
+    int32 id = 1;
+}
