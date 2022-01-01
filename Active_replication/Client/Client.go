@@ -22,9 +22,11 @@ func main() {
 	//setupLogger()
 
 	fe = frontend{
-		clients: make(map[int32]pb.AuctionServiceClient),
+		clients: make(map[int32]pb.ServiceClient),
 		ctx:     context.Background(),
 	}
+
+	setupID()
 
 	dialServer()
 
@@ -35,6 +37,7 @@ func main() {
 	for scanner.Scan() {
 		command := scanner.Text()
 		input := strings.Split(strings.ToLower(command), " ")
+		//Command here, length if you need to add an argument
 		if len(input) > 2 && input[0] == "bid" {
 			auctionId, err := strconv.ParseInt(input[1], 10, 32)
 			if err != nil {
@@ -83,4 +86,16 @@ func setupLogger() {
 	}
 	//Sets the loggers output to the log file
 	log.SetOutput(file)
+}
+
+func setupID() {
+	// Asks client for a nickname
+	fmt.Println("Please enter your name:")
+	reader := bufio.NewReader(os.Stdin)
+	tempname, err := reader.ReadString('\n')
+	if err != nil {
+		log.Printf("Failed to read from console: %v \n", err)
+	}
+	fe.name = strings.Trim(tempname, "\r\n")
+	log.Printf("Name saved: %v\n", fe.name)
 }

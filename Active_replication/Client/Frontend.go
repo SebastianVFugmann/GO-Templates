@@ -10,13 +10,15 @@ import (
 )
 
 type frontend struct {
-	id      int32
+	name    string
 	clients map[int32]pb.AuctionClient
 	ctx     context.Context
 	ackch   chan pb.Acknowledgement
 	repch   chan pb.StatusReply
 }
 
+//Focus on having a main method that calls the gRPC function on one server
+//And a method that calls on all servers, that calls the main method.
 func (fe *frontend) bidOnReplica(m *pb.BidMessage, c pb.AuctionClient) {
 	ack, err := c.Bid(fe.ctx, m)
 	if err != nil {
@@ -34,7 +36,7 @@ func (fe *frontend) bid(auctionId int32, bid int32) {
 	m := &pb.BidMessage{
 		AuctionId: auctionId,
 		Bid:       bid,
-		Bidder:    fe.id,
+		Bidder:    fe.name,
 	}
 	var a pb.Acknowledgement
 	var r pb.StatusReply

@@ -3,8 +3,7 @@
 
 syntax = "proto3";
 
-package auction;
-option go_package = "https://github.com/SebastianVFugmann/GO-Templates/Active_replication/Service";
+option go_package = "github.com/SebastianVFugmann/GO-Templates/Active_replication/Service";
 
 service Service {
     rpc Method (Request) returns (Acknowledgement) {}
