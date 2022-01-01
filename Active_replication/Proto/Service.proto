@@ -1,0 +1,29 @@
+//Command: protoc --go_out=. --go_opt=paths=source_relative --go-grpc_out=. --go-grpc_opt=paths=source_relative Proto/Service.proto
+//Run from Active_replication folder. If you are in the proto folder, remove the first "Proto/"
+
+syntax = "proto3";
+
+package auction;
+option go_package = "https://github.com/SebastianVFugmann/GO-Templates/Active_replication/Service";
+
+service Service {
+    rpc Method (Request) returns (Acknowledgement) {}
+    rpc CreateID (Empty) returns (NodeId);
+}
+
+message Request {
+    int32 bidder = 1;
+
+}
+
+message Acknowledgement {
+    int32 ack = 1;
+}
+
+message NodeId {
+    int32 id = 1;
+}
+
+message Empty {
+    
+}
