@@ -3,26 +3,18 @@
 
 syntax = "proto3";
 
+package service;
 option go_package = "github.com/SebastianVFugmann/GO-Templates/Active_replication/Service";
 
 service Service {
-    rpc Method (Request) returns (Acknowledgement) {}
-    rpc CreateID (Empty) returns (NodeId);
+    rpc increment (IncrementRequest) returns (IncrementReply) {}
 }
 
-message Request {
-    int32 bidder = 1;
-
+message IncrementRequest {
+    int32 Value = 1;
 }
 
-message Acknowledgement {
-    int32 ack = 1;
-}
-
-message NodeId {
-    int32 id = 1;
-}
-
-message Empty {
-    
+message IncrementReply {
+    bool Success = 1;
+    int32 ValueBefore = 2;
 }

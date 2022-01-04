@@ -3,148 +3,65 @@ package main
 import (
 	"context"
 	"fmt"
-	"strings"
 	"time"
 
 	pb "github.com/SebastianVFugmann/GO-Templates/Active_replication/Service"
 )
 
 type frontend struct {
-	name    string
-	clients map[int32]pb.AuctionClient
-	ctx     context.Context
-	ackch   chan pb.Acknowledgement
-	repch   chan pb.StatusReply
+	//Only needs name if the implementation needs it
+	//name    string
+	replicas map[int32]pb.AuctionClient
+	ctx      context.Context
+	//A channel for each kind of reply the client can get
+	repch chan pb.IncrementReply
 }
 
 //Focus on having a main method that calls the gRPC function on one server
 //And a method that calls on all servers, that calls the main method.
-func (fe *frontend) bidOnReplica(m *pb.BidMessage, c pb.AuctionClient) {
-	ack, err := c.Bid(fe.ctx, m)
+func (fe *frontend) incrementReplica(req *pb.IncrementRequest, c pb.ServiceClient) {
+	rep, err := c.Increment(fe.ctx, req)
 	if err != nil {
-		if strings.Contains(err.Error(), "Not a valid auction id.") {
-			fe.ackch <- pb.Acknowledgement{Ack: -1}
-		} else {
-			fe.ackch <- pb.Acknowledgement{Ack: -2}
-		}
-	} else {
-		fe.ackch <- *ack
-	}
-}
-
-func (fe *frontend) bid(auctionId int32, bid int32) {
-	m := &pb.BidMessage{
-		AuctionId: auctionId,
-		Bid:       bid,
-		Bidder:    fe.name,
-	}
-	var a pb.Acknowledgement
-	var r pb.StatusReply
-
-bidonallreplicas:
-	for k, v := range fe.clients {
-		go fe.bidOnReplica(m, v)
-
-		start := time.Now()
-	fivesecondcheck:
-		for start.Add(5 * time.Second).After(time.Now()) {
-
-			select {
-			case ack := <-fe.ackch:
-				if ack.Ack == -1 {
-					fmt.Printf("This is not a valid auction id: %v.\n", auctionId)
-					return
-				} else if ack.Ack == -2 {
-					// outcommented because of !transparency
-					// log.Println("Server seems to be dead. Deleting ... ")
-					delete(fe.clients, k)
-					continue bidonallreplicas
-				}
-				a = ack
-				break fivesecondcheck
-			default:
-			}
-		}
-
-		req := &pb.StatusRequest{
-			AuctionId: auctionId,
-		}
-		reply, _ := v.Status(fe.ctx, req)
-		r = *reply
-	}
-
-	switch acktype := a.Ack; acktype {
-	case 0:
-		fmt.Printf("Bid of %v camels accepted. You are currently the highest bidder on auction %v.\n", bid, auctionId)
-	case 1:
-		if r.HighestBid == 0 {
-			fmt.Print("You must bid at least 1 camel.\n")
-		} else {
-			fmt.Printf("Bid of %v camels not accepted. There is a higher bid of %v camels from %v on auction %v.\n", bid, r.HighestBid, r.Bidder, auctionId)
-		}
-	case 2:
-		if r.HighestBid == 0 {
-			fmt.Printf("Bid of %v camels not accepted. Auction %v has ended. No bids were made.\n", bid, auctionId)
-		} else {
-			fmt.Printf("Bid of %v camels not accepted. Auction %v has ended. Winner: %v with a bid of %v camels.\n", bid, auctionId, r.Bidder, r.HighestBid)
-		}
-	}
-}
-
-func (fe *frontend) statusFromReplica(req *pb.StatusRequest, c pb.AuctionClient) {
-	rep, err := c.Status(fe.ctx, req)
-	if err != nil {
-		if strings.Contains(err.Error(), "Not a valid auction id.") {
-			fe.repch <- pb.StatusReply{HighestBid: -1}
-		} else {
-			fe.repch <- pb.StatusReply{HighestBid: -2}
-		}
+		fe.repch <- pb.IncrementReply{Success: false, ValueBefore: -1}
 	} else {
 		fe.repch <- *rep
 	}
 }
 
-func (fe *frontend) status(auctionId int32) {
-	req := &pb.StatusRequest{
-		AuctionId: auctionId,
+func (fe *frontend) increment(value int32) string {
+	if value <= 0 {
+		return fmt.Sprint("You can't set a negative value.")
 	}
-	var r pb.StatusReply
 
-statusfromallreplicas:
-	for k, v := range fe.clients {
-		go fe.statusFromReplica(req, v)
+	req := &pb.IncrementRequest{
+		Value: value,
+	}
+	var rep pb.IncrementReply
+
+incrementreplicas:
+	for k, v := range fe.replicas {
+		go fe.incrementReplica(req, v)
 
 		start := time.Now()
 	fivesecondcheck:
 		for start.Add(5 * time.Second).After(time.Now()) {
 			select {
-			case rep := <-fe.repch:
-				if rep.HighestBid == -1 {
-					fmt.Printf("This is not a valid auction id: %v.\n", auctionId)
-					return
-				} else if rep.HighestBid == -2 {
-					// log.Println("Server seems to be dead. Deleting ... ")
-					delete(fe.clients, k)
-					continue statusfromallreplicas
+			case reply := <-fe.repch:
+				if reply.ValueBefore < 0 {
+					delete(fe.replicas, k)
+					continue incrementreplicas
 				}
-				r = rep
+				rep = reply
 				break fivesecondcheck
 			default:
 			}
 		}
 	}
 
-	if r.Active {
-		if r.HighestBid == 0 {
-			fmt.Print("This auction is still active. No bids have been made yet.\n")
-		} else {
-			fmt.Printf("This auction is still active. Highest bid is currently %v camels from %v.\n", r.HighestBid, r.Bidder)
-		}
+	if rep.Success {
+		return fmt.Sprintf("Cool! Incremented to %v - was %v before.", value, rep.ValueBefore)
 	} else {
-		if r.HighestBid == 0 {
-			fmt.Print("This auction has ended. No bids were made.\n")
-		} else {
-			fmt.Printf("This auction has ended. Winning bid was %v camels from %v.\n", r.HighestBid, r.Bidder)
-		}
+		return fmt.Sprintf("Uh oh! You cannot increment to %v, since the value is already %v.", value, rep.ValueBefore)
 	}
+
 }

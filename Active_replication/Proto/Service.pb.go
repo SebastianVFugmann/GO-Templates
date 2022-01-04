@@ -23,16 +23,16 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
-type Request struct {
+type IncrementRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	Bidder int32 `protobuf:"varint,1,opt,name=bidder,proto3" json:"bidder,omitempty"`
+	Value int32 `protobuf:"varint,1,opt,name=Value,proto3" json:"Value,omitempty"`
 }
 
-func (x *Request) Reset() {
-	*x = Request{}
+func (x *IncrementRequest) Reset() {
+	*x = IncrementRequest{}
 	if protoimpl.UnsafeEnabled {
 		mi := &file_Proto_Service_proto_msgTypes[0]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -40,13 +40,13 @@ func (x *Request) Reset() {
 	}
 }
 
-func (x *Request) String() string {
+func (x *IncrementRequest) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*Request) ProtoMessage() {}
+func (*IncrementRequest) ProtoMessage() {}
 
-func (x *Request) ProtoReflect() protoreflect.Message {
+func (x *IncrementRequest) ProtoReflect() protoreflect.Message {
 	mi := &file_Proto_Service_proto_msgTypes[0]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -58,28 +58,29 @@ func (x *Request) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use Request.ProtoReflect.Descriptor instead.
-func (*Request) Descriptor() ([]byte, []int) {
+// Deprecated: Use IncrementRequest.ProtoReflect.Descriptor instead.
+func (*IncrementRequest) Descriptor() ([]byte, []int) {
 	return file_Proto_Service_proto_rawDescGZIP(), []int{0}
 }
 
-func (x *Request) GetBidder() int32 {
+func (x *IncrementRequest) GetValue() int32 {
 	if x != nil {
-		return x.Bidder
+		return x.Value
 	}
 	return 0
 }
 
-type Acknowledgement struct {
+type IncrementReply struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	Ack int32 `protobuf:"varint,1,opt,name=ack,proto3" json:"ack,omitempty"`
+	Success     bool  `protobuf:"varint,1,opt,name=Success,proto3" json:"Success,omitempty"`
+	ValueBefore int32 `protobuf:"varint,2,opt,name=ValueBefore,proto3" json:"ValueBefore,omitempty"`
 }
 
-func (x *Acknowledgement) Reset() {
-	*x = Acknowledgement{}
+func (x *IncrementReply) Reset() {
+	*x = IncrementReply{}
 	if protoimpl.UnsafeEnabled {
 		mi := &file_Proto_Service_proto_msgTypes[1]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -87,13 +88,13 @@ func (x *Acknowledgement) Reset() {
 	}
 }
 
-func (x *Acknowledgement) String() string {
+func (x *IncrementReply) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*Acknowledgement) ProtoMessage() {}
+func (*IncrementReply) ProtoMessage() {}
 
-func (x *Acknowledgement) ProtoReflect() protoreflect.Message {
+func (x *IncrementReply) ProtoReflect() protoreflect.Message {
 	mi := &file_Proto_Service_proto_msgTypes[1]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -105,124 +106,48 @@ func (x *Acknowledgement) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use Acknowledgement.ProtoReflect.Descriptor instead.
-func (*Acknowledgement) Descriptor() ([]byte, []int) {
+// Deprecated: Use IncrementReply.ProtoReflect.Descriptor instead.
+func (*IncrementReply) Descriptor() ([]byte, []int) {
 	return file_Proto_Service_proto_rawDescGZIP(), []int{1}
 }
 
-func (x *Acknowledgement) GetAck() int32 {
+func (x *IncrementReply) GetSuccess() bool {
 	if x != nil {
-		return x.Ack
+		return x.Success
+	}
+	return false
+}
+
+func (x *IncrementReply) GetValueBefore() int32 {
+	if x != nil {
+		return x.ValueBefore
 	}
 	return 0
-}
-
-type NodeId struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-
-	Id int32 `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
-}
-
-func (x *NodeId) Reset() {
-	*x = NodeId{}
-	if protoimpl.UnsafeEnabled {
-		mi := &file_Proto_Service_proto_msgTypes[2]
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		ms.StoreMessageInfo(mi)
-	}
-}
-
-func (x *NodeId) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*NodeId) ProtoMessage() {}
-
-func (x *NodeId) ProtoReflect() protoreflect.Message {
-	mi := &file_Proto_Service_proto_msgTypes[2]
-	if protoimpl.UnsafeEnabled && x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use NodeId.ProtoReflect.Descriptor instead.
-func (*NodeId) Descriptor() ([]byte, []int) {
-	return file_Proto_Service_proto_rawDescGZIP(), []int{2}
-}
-
-func (x *NodeId) GetId() int32 {
-	if x != nil {
-		return x.Id
-	}
-	return 0
-}
-
-type Empty struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-}
-
-func (x *Empty) Reset() {
-	*x = Empty{}
-	if protoimpl.UnsafeEnabled {
-		mi := &file_Proto_Service_proto_msgTypes[3]
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		ms.StoreMessageInfo(mi)
-	}
-}
-
-func (x *Empty) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*Empty) ProtoMessage() {}
-
-func (x *Empty) ProtoReflect() protoreflect.Message {
-	mi := &file_Proto_Service_proto_msgTypes[3]
-	if protoimpl.UnsafeEnabled && x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use Empty.ProtoReflect.Descriptor instead.
-func (*Empty) Descriptor() ([]byte, []int) {
-	return file_Proto_Service_proto_rawDescGZIP(), []int{3}
 }
 
 var File_Proto_Service_proto protoreflect.FileDescriptor
 
 var file_Proto_Service_proto_rawDesc = []byte{
 	0x0a, 0x13, 0x50, 0x72, 0x6f, 0x74, 0x6f, 0x2f, 0x53, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x2e,
-	0x70, 0x72, 0x6f, 0x74, 0x6f, 0x22, 0x21, 0x0a, 0x07, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74,
-	0x12, 0x16, 0x0a, 0x06, 0x62, 0x69, 0x64, 0x64, 0x65, 0x72, 0x18, 0x01, 0x20, 0x01, 0x28, 0x05,
-	0x52, 0x06, 0x62, 0x69, 0x64, 0x64, 0x65, 0x72, 0x22, 0x23, 0x0a, 0x0f, 0x41, 0x63, 0x6b, 0x6e,
-	0x6f, 0x77, 0x6c, 0x65, 0x64, 0x67, 0x65, 0x6d, 0x65, 0x6e, 0x74, 0x12, 0x10, 0x0a, 0x03, 0x61,
-	0x63, 0x6b, 0x18, 0x01, 0x20, 0x01, 0x28, 0x05, 0x52, 0x03, 0x61, 0x63, 0x6b, 0x22, 0x18, 0x0a,
-	0x06, 0x4e, 0x6f, 0x64, 0x65, 0x49, 0x64, 0x12, 0x0e, 0x0a, 0x02, 0x69, 0x64, 0x18, 0x01, 0x20,
-	0x01, 0x28, 0x05, 0x52, 0x02, 0x69, 0x64, 0x22, 0x07, 0x0a, 0x05, 0x45, 0x6d, 0x70, 0x74, 0x79,
-	0x32, 0x4e, 0x0a, 0x07, 0x53, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x12, 0x26, 0x0a, 0x06, 0x4d,
-	0x65, 0x74, 0x68, 0x6f, 0x64, 0x12, 0x08, 0x2e, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a,
-	0x10, 0x2e, 0x41, 0x63, 0x6b, 0x6e, 0x6f, 0x77, 0x6c, 0x65, 0x64, 0x67, 0x65, 0x6d, 0x65, 0x6e,
-	0x74, 0x22, 0x00, 0x12, 0x1b, 0x0a, 0x08, 0x43, 0x72, 0x65, 0x61, 0x74, 0x65, 0x49, 0x44, 0x12,
-	0x06, 0x2e, 0x45, 0x6d, 0x70, 0x74, 0x79, 0x1a, 0x07, 0x2e, 0x4e, 0x6f, 0x64, 0x65, 0x49, 0x64,
-	0x42, 0x46, 0x5a, 0x44, 0x67, 0x69, 0x74, 0x68, 0x75, 0x62, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x53,
-	0x65, 0x62, 0x61, 0x73, 0x74, 0x69, 0x61, 0x6e, 0x56, 0x46, 0x75, 0x67, 0x6d, 0x61, 0x6e, 0x6e,
-	0x2f, 0x47, 0x4f, 0x2d, 0x54, 0x65, 0x6d, 0x70, 0x6c, 0x61, 0x74, 0x65, 0x73, 0x2f, 0x41, 0x63,
-	0x74, 0x69, 0x76, 0x65, 0x5f, 0x72, 0x65, 0x70, 0x6c, 0x69, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e,
-	0x2f, 0x53, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0x70, 0x72, 0x6f, 0x74, 0x6f, 0x12, 0x07, 0x73, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x22, 0x28,
+	0x0a, 0x10, 0x49, 0x6e, 0x63, 0x72, 0x65, 0x6d, 0x65, 0x6e, 0x74, 0x52, 0x65, 0x71, 0x75, 0x65,
+	0x73, 0x74, 0x12, 0x14, 0x0a, 0x05, 0x56, 0x61, 0x6c, 0x75, 0x65, 0x18, 0x01, 0x20, 0x01, 0x28,
+	0x05, 0x52, 0x05, 0x56, 0x61, 0x6c, 0x75, 0x65, 0x22, 0x4c, 0x0a, 0x0e, 0x49, 0x6e, 0x63, 0x72,
+	0x65, 0x6d, 0x65, 0x6e, 0x74, 0x52, 0x65, 0x70, 0x6c, 0x79, 0x12, 0x18, 0x0a, 0x07, 0x53, 0x75,
+	0x63, 0x63, 0x65, 0x73, 0x73, 0x18, 0x01, 0x20, 0x01, 0x28, 0x08, 0x52, 0x07, 0x53, 0x75, 0x63,
+	0x63, 0x65, 0x73, 0x73, 0x12, 0x20, 0x0a, 0x0b, 0x56, 0x61, 0x6c, 0x75, 0x65, 0x42, 0x65, 0x66,
+	0x6f, 0x72, 0x65, 0x18, 0x02, 0x20, 0x01, 0x28, 0x05, 0x52, 0x0b, 0x56, 0x61, 0x6c, 0x75, 0x65,
+	0x42, 0x65, 0x66, 0x6f, 0x72, 0x65, 0x32, 0x4c, 0x0a, 0x07, 0x53, 0x65, 0x72, 0x76, 0x69, 0x63,
+	0x65, 0x12, 0x41, 0x0a, 0x09, 0x69, 0x6e, 0x63, 0x72, 0x65, 0x6d, 0x65, 0x6e, 0x74, 0x12, 0x19,
+	0x2e, 0x73, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x2e, 0x49, 0x6e, 0x63, 0x72, 0x65, 0x6d, 0x65,
+	0x6e, 0x74, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x17, 0x2e, 0x73, 0x65, 0x72, 0x76,
+	0x69, 0x63, 0x65, 0x2e, 0x49, 0x6e, 0x63, 0x72, 0x65, 0x6d, 0x65, 0x6e, 0x74, 0x52, 0x65, 0x70,
+	0x6c, 0x79, 0x22, 0x00, 0x42, 0x46, 0x5a, 0x44, 0x67, 0x69, 0x74, 0x68, 0x75, 0x62, 0x2e, 0x63,
+	0x6f, 0x6d, 0x2f, 0x53, 0x65, 0x62, 0x61, 0x73, 0x74, 0x69, 0x61, 0x6e, 0x56, 0x46, 0x75, 0x67,
+	0x6d, 0x61, 0x6e, 0x6e, 0x2f, 0x47, 0x4f, 0x2d, 0x54, 0x65, 0x6d, 0x70, 0x6c, 0x61, 0x74, 0x65,
+	0x73, 0x2f, 0x41, 0x63, 0x74, 0x69, 0x76, 0x65, 0x5f, 0x72, 0x65, 0x70, 0x6c, 0x69, 0x63, 0x61,
+	0x74, 0x69, 0x6f, 0x6e, 0x2f, 0x53, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x62, 0x06, 0x70, 0x72,
+	0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (
@@ -237,20 +162,16 @@ func file_Proto_Service_proto_rawDescGZIP() []byte {
 	return file_Proto_Service_proto_rawDescData
 }
 
-var file_Proto_Service_proto_msgTypes = make([]protoimpl.MessageInfo, 4)
+var file_Proto_Service_proto_msgTypes = make([]protoimpl.MessageInfo, 2)
 var file_Proto_Service_proto_goTypes = []interface{}{
-	(*Request)(nil),         // 0: Request
-	(*Acknowledgement)(nil), // 1: Acknowledgement
-	(*NodeId)(nil),          // 2: NodeId
-	(*Empty)(nil),           // 3: Empty
+	(*IncrementRequest)(nil), // 0: service.IncrementRequest
+	(*IncrementReply)(nil),   // 1: service.IncrementReply
 }
 var file_Proto_Service_proto_depIdxs = []int32{
-	0, // 0: Service.Method:input_type -> Request
-	3, // 1: Service.CreateID:input_type -> Empty
-	1, // 2: Service.Method:output_type -> Acknowledgement
-	2, // 3: Service.CreateID:output_type -> NodeId
-	2, // [2:4] is the sub-list for method output_type
-	0, // [0:2] is the sub-list for method input_type
+	0, // 0: service.Service.increment:input_type -> service.IncrementRequest
+	1, // 1: service.Service.increment:output_type -> service.IncrementReply
+	1, // [1:2] is the sub-list for method output_type
+	0, // [0:1] is the sub-list for method input_type
 	0, // [0:0] is the sub-list for extension type_name
 	0, // [0:0] is the sub-list for extension extendee
 	0, // [0:0] is the sub-list for field type_name
@@ -263,7 +184,7 @@ func file_Proto_Service_proto_init() {
 	}
 	if !protoimpl.UnsafeEnabled {
 		file_Proto_Service_proto_msgTypes[0].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*Request); i {
+			switch v := v.(*IncrementRequest); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -275,31 +196,7 @@ func file_Proto_Service_proto_init() {
 			}
 		}
 		file_Proto_Service_proto_msgTypes[1].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*Acknowledgement); i {
-			case 0:
-				return &v.state
-			case 1:
-				return &v.sizeCache
-			case 2:
-				return &v.unknownFields
-			default:
-				return nil
-			}
-		}
-		file_Proto_Service_proto_msgTypes[2].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*NodeId); i {
-			case 0:
-				return &v.state
-			case 1:
-				return &v.sizeCache
-			case 2:
-				return &v.unknownFields
-			default:
-				return nil
-			}
-		}
-		file_Proto_Service_proto_msgTypes[3].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*Empty); i {
+			switch v := v.(*IncrementReply); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -317,7 +214,7 @@ func file_Proto_Service_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_Proto_Service_proto_rawDesc,
 			NumEnums:      0,
-			NumMessages:   4,
+			NumMessages:   2,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

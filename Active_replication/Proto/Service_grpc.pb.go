@@ -18,8 +18,7 @@ const _ = grpc.SupportPackageIsVersion7
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type ServiceClient interface {
-	Method(ctx context.Context, in *Request, opts ...grpc.CallOption) (*Acknowledgement, error)
-	CreateID(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*NodeId, error)
+	Increment(ctx context.Context, in *IncrementRequest, opts ...grpc.CallOption) (*IncrementReply, error)
 }
 
 type serviceClient struct {
@@ -30,18 +29,9 @@ func NewServiceClient(cc grpc.ClientConnInterface) ServiceClient {
 	return &serviceClient{cc}
 }
 
-func (c *serviceClient) Method(ctx context.Context, in *Request, opts ...grpc.CallOption) (*Acknowledgement, error) {
-	out := new(Acknowledgement)
-	err := c.cc.Invoke(ctx, "/Service/Method", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *serviceClient) CreateID(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*NodeId, error) {
-	out := new(NodeId)
-	err := c.cc.Invoke(ctx, "/Service/CreateID", in, out, opts...)
+func (c *serviceClient) Increment(ctx context.Context, in *IncrementRequest, opts ...grpc.CallOption) (*IncrementReply, error) {
+	out := new(IncrementReply)
+	err := c.cc.Invoke(ctx, "/service.Service/increment", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -52,8 +42,7 @@ func (c *serviceClient) CreateID(ctx context.Context, in *Empty, opts ...grpc.Ca
 // All implementations must embed UnimplementedServiceServer
 // for forward compatibility
 type ServiceServer interface {
-	Method(context.Context, *Request) (*Acknowledgement, error)
-	CreateID(context.Context, *Empty) (*NodeId, error)
+	Increment(context.Context, *IncrementRequest) (*IncrementReply, error)
 	mustEmbedUnimplementedServiceServer()
 }
 
@@ -61,11 +50,8 @@ type ServiceServer interface {
 type UnimplementedServiceServer struct {
 }
 
-func (UnimplementedServiceServer) Method(context.Context, *Request) (*Acknowledgement, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method Method not implemented")
-}
-func (UnimplementedServiceServer) CreateID(context.Context, *Empty) (*NodeId, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method CreateID not implemented")
+func (UnimplementedServiceServer) Increment(context.Context, *IncrementRequest) (*IncrementReply, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Increment not implemented")
 }
 func (UnimplementedServiceServer) mustEmbedUnimplementedServiceServer() {}
 
@@ -80,38 +66,20 @@ func RegisterServiceServer(s grpc.ServiceRegistrar, srv ServiceServer) {
 	s.RegisterService(&Service_ServiceDesc, srv)
 }
 
-func _Service_Method_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(Request)
+func _Service_Increment_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(IncrementRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(ServiceServer).Method(ctx, in)
+		return srv.(ServiceServer).Increment(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/Service/Method",
+		FullMethod: "/service.Service/increment",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ServiceServer).Method(ctx, req.(*Request))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _Service_CreateID_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(Empty)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(ServiceServer).CreateID(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/Service/CreateID",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ServiceServer).CreateID(ctx, req.(*Empty))
+		return srv.(ServiceServer).Increment(ctx, req.(*IncrementRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -120,16 +88,12 @@ func _Service_CreateID_Handler(srv interface{}, ctx context.Context, dec func(in
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
 var Service_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "Service",
+	ServiceName: "service.Service",
 	HandlerType: (*ServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
-			MethodName: "Method",
-			Handler:    _Service_Method_Handler,
-		},
-		{
-			MethodName: "CreateID",
-			Handler:    _Service_CreateID_Handler,
+			MethodName: "increment",
+			Handler:    _Service_Increment_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
