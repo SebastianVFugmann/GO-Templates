@@ -1,0 +1,13 @@
+addresses = sort [addr1, addr2,addr3] 
+
+main() {
+
+/* this client does only two increments */
+
+for i:=0..2 do
+ if invoke(inc,addr[i]) then break
+	
+for i:=0..2 do
+ if invoke(inc,addr[i]) then break
+
+}

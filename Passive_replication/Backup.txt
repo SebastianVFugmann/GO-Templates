@@ -1,0 +1,32 @@
+int val = 0
+
+address rep = #address of other backup replica#
+address primary = #address of primary replica#
+
+timer() {
+ while true {
+  sleep(20);
+  ping (primary);
+  if noReply then {
+     if lowest(MYID) then #becomePrimaryReplica#
+     else primary = rep
+  }
+ }
+} 
+
+int receiveUpdate(addr) {
+ return receive(add);
+} 
+
+sendAck(addr) {
+ send(addr, ACK)
+} 
+
+int main () {
+   while true {
+   	  if #becomePrimaryReplica then #behaveAsPrimary
+	  else {
+   	        val = receiveUpdate(primary);
+   	        sendAck(primary);
+	       }
+}

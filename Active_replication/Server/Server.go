@@ -2,13 +2,13 @@ package main
 
 import (
 	"bufio"
-	"context"
 	"fmt"
 	"log"
 	"net"
 	"os"
 	"strconv"
 	"strings"
+	"sync"
 
 	pb "github.com/SebastianVFugmann/GO-Templates/Active_replication/Service"
 	"github.com/SebastianVFugmann/GO-Templates/LamportClock"
@@ -22,7 +22,12 @@ var (
 type server struct {
 	pb.UnimplementedAuctionServer
 	lamport LamportClock.LamportClock
-	ids     int32
+	inc     incrementor
+}
+
+type incrementor struct {
+	lock         sync.Mutex
+	currentValue int32
 }
 
 func main() {
@@ -79,11 +84,27 @@ func start() {
 
 func createServer() *server {
 	server := &server{
-		ids: 0,
+		inc: incrementor{currentValue: 0},
 	}
 	server.lamport.Initialize()
 	return server
 }
+
+/*
+func (s *server) Increment(ctx context.Context, req *incservice.IncrementRequest) (*incservice.IncrementReply, error) {
+	s.inc.lock.Lock()
+	defer s.inc.lock.Unlock()
+
+	rep := &incservice.IncrementReply{ValueBefore: s.inc.currentValue}
+
+	if req.Value > s.inc.currentValue {
+		rep.Success = true
+		s.inc.currentValue = req.Value
+	} else {
+		rep.Success = false
+	}
+	return rep, nil
+}*/
 
 /*
 type Acknowledgement int32
@@ -97,11 +118,3 @@ const (
 func (s *server) Bid(ctx context.Context, m *pb.Message) (*pb.Acknowledgement, error) {
 	return nil, nil
 }*/
-
-//Gets the next ID and sends it to the client
-func (server *server) CreateID(ctx context.Context, in *pb.Empty) (*pb.NodeId, error) {
-	server.ids += 1
-	return &pb.NodeId{
-		Id: server.ids,
-	}, nil
-}

@@ -1,0 +1,38 @@
+int val = 0
+
+address rep1 = #address of first backup replica#
+address rep2 = #address of second backup replica#
+
+
+timer() {
+ while true {
+  sleep(20);
+  ping (rep1);
+  if noReply rep1 = DEAD;
+  ping (rep2);
+  if noReply rep2 = DEAD;
+ }
+} 
+
+
+sendUpdate(rep,val) {
+ if rep == DEAD then return
+ else send(rep,val)
+} 
+
+receiveAck(rep) {
+ if rep == DEAD then return
+ else receive(rep)
+} 
+
+int inc () {
+   val++;
+
+   sendUpdate(rep1, val);
+   sendUpdate(rep2, val);
+
+   receiveAck(rep1);
+   receiveAck(rep2);
+
+   return val;
+} 
